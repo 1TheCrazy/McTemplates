@@ -1,0 +1,8 @@
+services:
+  mctemplates:
+    build: .
+    image: 1TheCrazy/mctemplates:latest
+    ports:
+      - 443:443
+    env_file:
+      - .env
