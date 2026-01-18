@@ -7,6 +7,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 import zipRouter from './routes/zip.js';
+import versionsRouter from './routes/versions.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -20,6 +21,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/zip', zipRouter);
+app.use('/versions', versionsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

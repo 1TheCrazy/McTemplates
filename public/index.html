@@ -137,7 +137,32 @@
         font-family: "JetBrains Mono", "Space Grotesk", monospace;
       }
 
+      select {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        background: var(--panel-strong);
+        color: var(--ink);
+        font-size: 1rem;
+        font-family: "JetBrains Mono", "Space Grotesk", monospace;
+        appearance: none;
+        background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%),
+          linear-gradient(135deg, var(--ink) 50%, transparent 50%),
+          linear-gradient(to right, var(--panel-strong), var(--panel-strong));
+        background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 12px) calc(50% - 2px),
+          100% 0;
+        background-size: 6px 6px, 6px 6px, 2.5em 2.5em;
+        background-repeat: no-repeat;
+      }
+
       input:focus {
+        outline: none;
+        border-color: rgba(111, 211, 255, 0.7);
+        box-shadow: 0 0 0 2px rgba(111, 211, 255, 0.2);
+      }
+
+      select:focus {
         outline: none;
         border-color: rgba(111, 211, 255, 0.7);
         box-shadow: 0 0 0 2px rgba(111, 211, 255, 0.2);
@@ -304,6 +329,12 @@
             <label for="modId">Mod ID</label>
             <input id="modId" name="id" placeholder="newmod" autocomplete="off" required />
           </div>
+          <div>
+            <label for="version">Template Version</label>
+            <select id="version" name="version">
+              <option value="">Loading versions...</option>
+            </select>
+          </div>
           <div class="cta">
             <button type="submit" id="downloadBtn">Download Template</button>
             <span class="status" id="statusText">Ready to package your template.</span>
@@ -323,6 +354,7 @@
               See <a href="https://docs.oracle.com/javase/tutorial/java/package/namingpkgs.html" target="_blank">Java Package Naming</a>.</div>
             <div><span class="pill">mod id</span>The Mod ID for your mod. Should be a short, lowercase identifier without spaces.</div>
             <div><span class="pill">mod name</span>Your Mods new name. This can be whatever you want it to be.</div>
+            <div><span class="pill">version</span>The MultiLoader-Template branch version to download.</div>
           </div>
         </div>
 
@@ -356,8 +388,9 @@
         statusText.style.color = isError ? '#ff8f6a' : '';
       }
 
-      async function downloadTemplate({ group, id, name }) {
+      async function downloadTemplate({ group, id, name, version }) {
         const params = new URLSearchParams({ group, id, name });
+        if (version) params.set('version', version);
         const response = await fetch(`/zip?${params.toString()}`);
 
         if (!response.ok) {
@@ -386,6 +419,7 @@
         const group = formData.get('group').trim();
         const id = formData.get('id').trim();
         const name = formData.get('name').trim();
+        const version = formData.get('version').trim();
 
         if (!group || !id || !name) {
           setStatus('Please fill out all fields before downloading.', true);
@@ -396,7 +430,7 @@
         setStatus('Generating zip, hang tight...');
 
         try {
-          await downloadTemplate({ group, id, name });
+          await downloadTemplate({ group, id, name, version });
           setStatus('Template downloaded. You are ready to build!');
         } catch (error) {
           setStatus(error.message, true);
@@ -404,6 +438,42 @@
           downloadBtn.disabled = false;
         }
       });
+
+      async function loadVersions() {
+        const versionSelect = document.getElementById('version');
+        try {
+          const response = await fetch('/versions');
+          if (!response.ok) {
+            throw new Error('Could not load versions.');
+          }
+          const data = await response.json();
+          const versions = Array.isArray(data.versions) ? data.versions : [];
+
+          versionSelect.innerHTML = '';
+          if (versions.length === 0) {
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'No versions found';
+            versionSelect.appendChild(option);
+            return;
+          }
+
+          versions.forEach((version) => {
+            const option = document.createElement('option');
+            option.value = version;
+            option.textContent = version;
+            versionSelect.appendChild(option);
+          });
+        } catch (error) {
+          versionSelect.innerHTML = '';
+          const option = document.createElement('option');
+          option.value = '';
+          option.textContent = 'Failed to load versions';
+          versionSelect.appendChild(option);
+        }
+      }
+
+      loadVersions();
     </script>
   </body>
 </html>
