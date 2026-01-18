@@ -16,24 +16,46 @@ export async function renameTemplateFiles(zip, nameRules){
         newPath = newPath.split("/").slice(1).join("/"); 
         // Replace paths
         newPath = newPath.replace("com/example/examplemod", nameRules.group.replace(/\./g, "/"));
-        newPath = newPath.replace("com.example.examplemod", nameRules.group.replace(/\./g, "/")); // META-INF
+        newPath = newPath.replace("com.example.examplemod", nameRules.group); // META-INF
         newPath = newPath.replace("examplemod", nameRules.id);
         // Replace ModInitializer files
-        newPath = newPath.replace("ExampleMod", nameRules.name);
+        newPath = newPath.replace("ExampleMod", nameRules.name.replace(/ /g, ""));
 
         // -- Apply File-Level renaming rules --
+        // Java files
+        // Rename packages etc.
         if(newPath.endsWith(".java")){
             let content = buf.toString("utf-8");
             content = content.replaceAll("com.example.examplemod", nameRules.group);
+            content = content.replaceAll("ExampleMod", nameRules.name.replace(/ /g, ""));
+            content = content.replaceAll("examplemod", nameRules.id);
 
             buf = Buffer.from(content, "utf8");
         }
 
+        // gradle.properties
         if(newPath.endsWith("gradle.properties")){
             let content = buf.toString("utf-8");
             content = content.replaceAll("group=com.example.examplemod", `group=${nameRules.group}`);
             content = content.replaceAll("mod_name=ExampleMod", `mod_name=${nameRules.name}`);
             content = content.replaceAll("mod_id=examplemod", `mod_id=${nameRules.id}`);
+
+            buf = Buffer.from(content, "utf8");
+        }
+
+        // Mixins and fabric.mod.json
+        if(newPath.endsWith(".json")){
+            let content = buf.toString("utf-8");
+            content = content.replaceAll("com.example.examplemod.ExampleMod", `${nameRules.group}.${nameRules.name.replace(/ /g, "")}`); // Fabric Entrypoint
+            content = content.replaceAll("com.example.examplemod", `${nameRules.group}`);
+
+            buf = Buffer.from(content, "utf8");
+        }
+
+        // IPlatformHelper
+        if(newPath.endsWith(".IPlatformHelper")){
+            let content = buf.toString("utf-8");
+            content = content.replaceAll("com.example.examplemod", `${nameRules.group}`);
 
             buf = Buffer.from(content, "utf8");
         }
