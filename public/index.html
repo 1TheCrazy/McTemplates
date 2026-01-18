@@ -2,21 +2,403 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Single Page + API</title>
+    <title>Mod Template Generator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0c141b;
+        --bg-soft: #111c26;
+        --panel: #17232f;
+        --panel-strong: #1c2d3c;
+        --ink: #f0f4f7;
+        --ink-dim: #b9c6d3;
+        --accent: #ffb454;
+        --accent-2: #6fd3ff;
+        --stroke: rgba(255, 255, 255, 0.08);
+        --shadow: 0 30px 60px rgba(4, 9, 14, 0.45);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Space Grotesk", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at top, rgba(111, 211, 255, 0.2), transparent 50%),
+          radial-gradient(circle at 20% 20%, rgba(255, 180, 84, 0.25), transparent 45%),
+          linear-gradient(135deg, #0c141b, #0a1016 60%, #101a24);
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 48px 24px 72px;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+
+      header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+
+      .hero {
+        max-width: 520px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(255, 180, 84, 0.16);
+        color: var(--accent);
+        font-size: 0.85rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 16px 0 12px;
+        font-size: clamp(2.6rem, 4vw, 3.4rem);
+        line-height: 1.1;
+      }
+
+      .lead {
+        color: var(--ink-dim);
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+
+      .grid {
+        display: grid;
+        gap: 24px;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--stroke);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(140deg, rgba(255, 180, 84, 0.12), transparent 45%);
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      .card h2 {
+        margin: 0 0 12px;
+        font-size: 1.4rem;
+      }
+
+      .stack {
+        display: grid;
+        gap: 16px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+        color: var(--ink-dim);
+      }
+
+      input {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        background: var(--panel-strong);
+        color: var(--ink);
+        font-size: 1rem;
+        font-family: "JetBrains Mono", "Space Grotesk", monospace;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: rgba(111, 211, 255, 0.7);
+        box-shadow: 0 0 0 2px rgba(111, 211, 255, 0.2);
+      }
+
+      .cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      button {
+        border: none;
+        border-radius: 14px;
+        padding: 12px 22px;
+        font-weight: 600;
+        font-size: 1rem;
+        background: linear-gradient(135deg, var(--accent), #ff8f6a);
+        color: #2b1607;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(255, 143, 106, 0.25);
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .status {
+        font-size: 0.95rem;
+        color: var(--ink-dim);
+      }
+
+      .info {
+        background: linear-gradient(160deg, rgba(23, 35, 47, 0.85), rgba(17, 28, 38, 0.95));
+      }
+
+      .info p {
+        margin: 0 0 12px;
+        color: var(--ink-dim);
+        line-height: 1.6;
+      }
+
+      .info-list {
+        display: grid;
+        gap: 10px;
+        font-size: 0.95rem;
+      }
+
+      .pill {
+        display: inline-block;
+        font-family: "JetBrains Mono", "Space Grotesk", monospace;
+        font-size: 0.85rem;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: rgba(111, 211, 255, 0.15);
+        color: var(--accent-2);
+        margin-right: 8px;
+      }
+
+      .tagline {
+        font-size: 0.95rem;
+        color: var(--ink-dim);
+        max-width: 360px;
+      }
+
+      .reveal {
+        animation: rise 0.8s ease forwards;
+        opacity: 0;
+      }
+
+      .reveal:nth-child(1) { animation-delay: 0.1s; }
+      .reveal:nth-child(2) { animation-delay: 0.25s; }
+      .reveal:nth-child(3) { animation-delay: 0.4s; }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      footer {
+        margin-top: 24px;
+        padding: 18px 24px;
+        border-top: 1px solid var(--stroke);
+        color: var(--ink-dim);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      footer span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      @media (max-width: 720px) {
+        header {
+          align-items: flex-start;
+        }
+
+        .tagline {
+          max-width: 100%;
+        }
+
+        footer {
+          justify-content: center;
+          text-align: center;
+        }
+      }
+    </style>
   </head>
   <body>
-    <h1>Single static page</h1>
-    <button id="btn">Call API</button>
-    <pre id="out"></pre>
+    <div class="page">
+      <header>
+        <div class="hero">
+          <span class="badge">Template Builder</span>
+          <h1>Generate a fresh mod template in seconds.</h1>
+          <p class="lead">
+            Fill in the essentials below and the generator will package a ready-to-edit template
+            with your identifiers already wired up. Keep this page open as a launch pad for new
+            mods.
+          </p>
+        </div>
+        <p class="tagline">
+          Lightweight UI, heavy lift. Export a zipped starter kit without leaving this dashboard.
+        </p>
+      </header>
+
+      <section class="grid">
+        <form class="card stack reveal" id="templateForm">
+          <h2>Template Inputs</h2>
+          <div>
+            <label for="group">Group / Package Namespace</label>
+            <input id="group" name="group" placeholder="com.example.yourmod" autocomplete="off" required />
+          </div>
+          <div>
+            <label for="modId">Mod ID</label>
+            <input id="modId" name="id" placeholder="newmod" autocomplete="off" required />
+          </div>
+          <div>
+            <label for="modName">Mod Name</label>
+            <input id="modName" name="name" placeholder="New Mod" autocomplete="off" required />
+          </div>
+          <div class="cta">
+            <button type="submit" id="downloadBtn">Download Template</button>
+            <span class="status" id="statusText">Ready to package your template.</span>
+          </div>
+        </form>
+
+        <div class="card info reveal">
+          <h2>Template Notes</h2>
+          <p>
+            A simple website that instantly generates a ready-to-build MultiLoader mod project from <a href="https://github.com/jaredlll08/MultiLoader-Template" target="_blank">jaredlll08's MultiLoader-Template</a> by letting you enter your mod name, mod ID, and group identifier, then automatically handling all required renaming and package/path updates for you.
+          </p>
+          <p>
+            Based on the original MultiLoader-Template by jaredlll08 on GitHub, with full credit to the OP for creating and maintaining the base template.
+          </p>
+          <div class="info-list">
+            <div><span class="pill">group</span>The Group Name for your mod.
+              See <a href="https://docs.oracle.com/javase/tutorial/java/package/namingpkgs.html" target="_blank">Java Package Naming</a>.</div>
+            <div><span class="pill">mod id</span>The Mod ID for your mod. Should be a short, lowercase identifier without spaces.</div>
+            <div><span class="pill">mod name</span>Your Mods new name. This can be whatever you want it to be.</div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <h2>What You Get</h2>
+          <p class="lead">
+            A zip file containing your scaffolded mod, renamed using the values you provide. Open
+            it, tweak the content, and ship.
+          </p>
+          <div class="info-list">
+            <div><span class="pill">01</span>Pre-wired identifiers for the mod.</div>
+            <div><span class="pill">02</span>Standard folder structure.</div>
+            <div><span class="pill">03</span>Source files ready for edits.</div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <span>Copyright © 2025 McTemplates - Richard Badouin. All rights reserved.</span>
+        <span>Built for fast mod scaffolding.</span>
+      </footer>
+    </div>
 
     <script>
-      const out = document.getElementById('out');
-      document.getElementById('btn').addEventListener('click', async () => {
-        await fetch('/getZip'); // same-origin request
+      const form = document.getElementById('templateForm');
+      const statusText = document.getElementById('statusText');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      function setStatus(message, isError = false) {
+        statusText.textContent = message;
+        statusText.style.color = isError ? '#ff8f6a' : '';
+      }
+
+      async function downloadTemplate({ group, id, name }) {
+        const params = new URLSearchParams({ group, id, name });
+        const response = await fetch(`/zip?${params.toString()}`);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || 'Failed to generate template.');
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        const filename = response.headers
+          .get('Content-Disposition')
+          ?.match(/filename="(.+)"/)?.[1] || 'template.zip';
+
+        anchor.href = url;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const group = formData.get('group').trim();
+        const id = formData.get('id').trim();
+        const name = formData.get('name').trim();
+
+        if (!group || !id || !name) {
+          setStatus('Please fill out all fields before downloading.', true);
+          return;
+        }
+
+        downloadBtn.disabled = true;
+        setStatus('Generating zip, hang tight...');
+
+        try {
+          await downloadTemplate({ group, id, name });
+          setStatus('Template downloaded. You are ready to build!');
+        } catch (error) {
+          setStatus(error.message, true);
+        } finally {
+          downloadBtn.disabled = false;
+        }
       });
-      // POST example:
-      // fetch('/api/echo', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({a:1}) })
     </script>
   </body>
 </html>
