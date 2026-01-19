@@ -19,8 +19,6 @@ app.set('port', port);
 
 /**
  * TLS cert/key paths (set these env vars on your server)
- *   SSL_CERT_PATH=/etc/ssl/cloudflare/cert.pem
- *   SSL_KEY_PATH=/etc/ssl/cloudflare/key.pem
  */
 const certPath = process.env.SSL_CERT_PATH;
 const keyPath = process.env.SSL_KEY_PATH;
