@@ -3,6 +3,6 @@ services:
     build: .
     image: 1TheCrazy/mctemplates:latest
     ports:
-      - 443:443
+      - 127.0.0.1:3000:3000
     env_file:
       - .env
