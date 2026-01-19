@@ -6,3 +6,5 @@ services:
       - 127.0.0.1:3000:3000
     env_file:
       - .env
+    volumes:
+      - "${SSL_DIR_HOST}:${SSL_DIR_CONTAINER}:ro"
